@@ -982,6 +982,8 @@ THD::THD(bool enable_plugins)
   system_thread= NON_SYSTEM_THREAD;
   cleanup_done= abort_on_warning= 0;
   m_release_resources_done= false;
+  thread_state = INCEPTION_STATE_INIT;
+  current_execute = NULL;
   peer_port= 0;					// For SHOW PROCESSLIST
   transaction.m_pending_rows_event= 0;
   transaction.flags.enabled= true;
@@ -1043,6 +1045,7 @@ THD::THD(bool enable_plugins)
   have_begin = FALSE;
   sql_cache = NULL;
   thd_sinfo = (sinfo_space_t*)my_malloc(sizeof(sinfo_space_t), MYF(0));
+  thd_sinfo->optype = INCEPTION_TYPE_LOCAL; 
   memset(thd_sinfo, 0, sizeof(sinfo_space_t));
   have_error_before = FALSE;
   parse_error = FALSE;
@@ -1051,6 +1054,8 @@ THD::THD(bool enable_plugins)
   use_osc = 0;
   LIST_INIT(tablecache.tablecache_lst);
   memset(&sql_statistic, 0, sizeof(sql_statistic_t));
+  mysql_mutex_init(NULL, &sleep_lock, MY_MUTEX_INIT_FAST);
+  mysql_cond_init(NULL, &sleep_cond, NULL);
 
   variables.long_query_time =10000000;
 #ifndef DBUG_OFF
@@ -1633,6 +1638,9 @@ void THD::cleanup(void)
 
   delete_dynamic(&user_var_events);
   my_hash_free(&user_vars);
+  mysql_mutex_destroy(&sleep_lock);
+  mysql_cond_destroy(&sleep_cond);
+
 //   if (gtid_mode > 0)
 //     variables.gtid_next.set_automatic();
 //   close_temporary_tables(this);

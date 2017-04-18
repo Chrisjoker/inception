@@ -172,8 +172,10 @@ extern bool inception_enable_partition_table;
 extern bool inception_enable_blob_type;
 extern bool inception_enable_enum_set_bit;
 extern bool inception_check_index_prefix;
+extern bool inception_enable_pk_columns_only_int;
 extern bool inception_enable_autoincrement_unsigned;
 extern ulong inception_max_char_length;
+extern ulong inception_max_primary_key_parts;
 extern bool inception_check_autoincrement_init_value;
 extern bool inception_check_autoincrement_datatype;
 extern bool inception_check_timestamp_default;
@@ -187,6 +189,7 @@ extern char* inception_osc_bin_dir;
 extern bool inception_osc_print_sql;
 extern bool inception_osc_print_none;
 extern bool inception_read_only;
+extern bool inception_check_identifier;
 extern bool inception_ddl_support;
 extern bool inception_osc_on;
 // extern ulong inception_osc_critical_connected;
@@ -340,7 +343,7 @@ extern ulong connection_errors_max_connection;
 extern ulong connection_errors_peer_addr;
 extern ulong log_warnings;
 
-#define ISQL_OPTION_COUNT 10
+#define ISQL_OPTION_COUNT 11
 
 
 /*
